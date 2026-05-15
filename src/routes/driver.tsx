@@ -14,6 +14,7 @@ import {
   Navigation,
 } from "lucide-react";
 import { AppShell, Section, StatCard } from "@/components/AppShell";
+import { DriverInbox } from "@/components/DriverInbox";
 
 export const Route = createFileRoute("/driver")({
   component: DriverDashboard,
@@ -36,6 +37,9 @@ function DriverDashboard() {
       subtitle="Your Sandton route departs in 38 minutes. 11 of 14 seats confirmed."
       badge="Verified · Tier 2"
     >
+      <div className="mb-5">
+        <DriverInbox />
+      </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Today's earnings" value="R1 240" delta="+R180 vs avg Mon" icon={TrendingUp} tone="success" />
         <StatCard label="This month" value="R28 470" delta="84% to target" icon={Wallet} tone="primary" />
