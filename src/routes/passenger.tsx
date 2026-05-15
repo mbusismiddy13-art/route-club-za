@@ -14,6 +14,7 @@ import {
   TrendingDown,
 } from "lucide-react";
 import { AppShell, Section, StatCard } from "@/components/AppShell";
+import { RequestRideCard } from "@/components/RequestRideCard";
 
 export const Route = createFileRoute("/passenger")({
   component: PassengerDashboard,
@@ -36,6 +37,9 @@ function PassengerDashboard() {
       subtitle="Your morning ride to Sandton CBD is confirmed for 06:45."
       badge="Commuter+ active"
     >
+      <div className="mb-5">
+        <RequestRideCard />
+      </div>
       <div className="grid gap-5 xl:grid-cols-3">
         {/* Live trip */}
         <Section

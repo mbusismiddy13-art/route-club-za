@@ -14,7 +14,122 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      drivers: {
+        Row: {
+          created_at: string
+          current_location: string | null
+          full_name: string
+          id: string
+          is_online: boolean
+          rating: number
+          seats: number
+          updated_at: string
+          user_id: string
+          vehicle_make: string | null
+          vehicle_model: string | null
+          vehicle_plate: string | null
+        }
+        Insert: {
+          created_at?: string
+          current_location?: string | null
+          full_name: string
+          id?: string
+          is_online?: boolean
+          rating?: number
+          seats?: number
+          updated_at?: string
+          user_id: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_plate?: string | null
+        }
+        Update: {
+          created_at?: string
+          current_location?: string | null
+          full_name?: string
+          id?: string
+          is_online?: boolean
+          rating?: number
+          seats?: number
+          updated_at?: string
+          user_id?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_plate?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ride_requests: {
+        Row: {
+          created_at: string
+          driver_id: string | null
+          dropoff: string
+          id: string
+          notes: string | null
+          passenger_id: string
+          pickup: string
+          status: Database["public"]["Enums"]["ride_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          driver_id?: string | null
+          dropoff: string
+          id?: string
+          notes?: string | null
+          passenger_id: string
+          pickup: string
+          status?: Database["public"]["Enums"]["ride_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          driver_id?: string | null
+          dropoff?: string
+          id?: string
+          notes?: string | null
+          passenger_id?: string
+          pickup?: string
+          status?: Database["public"]["Enums"]["ride_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_requests_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +138,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      ride_status:
+        | "pending"
+        | "accepted"
+        | "declined"
+        | "cancelled"
+        | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +270,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      ride_status: [
+        "pending",
+        "accepted",
+        "declined",
+        "cancelled",
+        "completed",
+      ],
+    },
   },
 } as const
