@@ -44,13 +44,10 @@ function Landing() {
               Built for the South African commuter
             </span>
             <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
-              Subscribe to your <span className="text-gradient">commute</span>.
-              <br />Skip the ride‑hailing tax.
+              The Transport <span className="text-gradient">Club</span>
             </h1>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-              Monthly commuter plans, shared‑route matching and verified drivers — for
-              workers, students, schools and businesses. Predictable pricing.
-              Real‑time tracking. POPIA‑safe.
+              Subscribe to your commute. Skip the ride‑hailing tax. Monthly plans, shared‑route matching and verified drivers — for workers, students, schools and businesses.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
