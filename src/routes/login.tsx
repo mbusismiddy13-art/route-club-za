@@ -92,7 +92,7 @@ function LoginPage() {
             ))}
           </div>
 
-          <form className="mt-6 space-y-4">
+          <form className="mt-6 space-y-4" onSubmit={submit}>
             <label className="block">
               <span className="text-xs font-medium text-muted-foreground">
                 {mode === "phone" ? "Mobile number" : "Email address"}
@@ -105,6 +105,9 @@ function LoginPage() {
                 )}
                 <input
                   type={mode === "phone" ? "tel" : "email"}
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  required
                   placeholder={mode === "phone" ? "+27 71 234 5678" : "you@company.co.za"}
                   className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                 />
@@ -116,48 +119,48 @@ function LoginPage() {
                 <span className="text-xs font-medium text-muted-foreground">Password</span>
                 <input
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
                   placeholder="••••••••"
                   className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary"
                 />
               </label>
             )}
 
-            <button
-              type="button"
-              className="w-full rounded-xl bg-gradient-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
-            >
-              {mode === "phone" ? "Send OTP" : "Sign in"}
-            </button>
-
-            <div className="relative my-2">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center">
-                <span className="bg-background px-3 text-[10px] uppercase tracking-widest text-muted-foreground">
-                  or
-                </span>
-              </div>
-            </div>
+            {err && <p className="text-xs text-destructive">{err}</p>}
+            {msg && <p className="text-xs text-success">{msg}</p>}
 
             <button
-              type="button"
-              className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium hover:bg-surface-elevated"
+              type="submit"
+              disabled={busy}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95 disabled:opacity-60"
             >
-              Continue with Google
+              {busy && <Loader2 className="h-4 w-4 animate-spin" />}
+              {mode === "phone" ? "Send OTP" : authMode === "signin" ? "Sign in" : "Create account"}
             </button>
+
+            {mode === "email" && (
+              <button
+                type="button"
+                onClick={() => setAuthMode(authMode === "signin" ? "signup" : "signin")}
+                className="w-full text-center text-xs text-muted-foreground hover:text-foreground"
+              >
+                {authMode === "signin"
+                  ? "New here? Create an account"
+                  : "Already have an account? Sign in"}
+              </button>
+            )}
           </form>
 
           <p className="mt-6 text-xs text-muted-foreground">
-            New here?{" "}
-            <Link to="/" className="text-primary-glow underline-offset-4 hover:underline">
-              Create a Transport Club account
-            </Link>
+            By continuing you agree to our POPIA‑aligned terms.
           </p>
         </div>
 
         <p className="text-xs text-muted-foreground">
-          By continuing you agree to our POPIA‑aligned terms. We never sell your data.
+          We never sell your data.
         </p>
       </div>
 
