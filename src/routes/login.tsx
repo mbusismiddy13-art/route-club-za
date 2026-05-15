@@ -10,7 +10,46 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const [mode, setMode] = useState<"phone" | "email">("phone");
+  const [mode, setMode] = useState<"phone" | "email">("email");
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErr(null);
+    setMsg(null);
+    if (mode === "phone") {
+      setMsg("Phone OTP coming soon — please use email for now.");
+      return;
+    }
+    setBusy(true);
+    if (authMode === "signup") {
+      const redirectUrl = `${window.location.origin}/passenger`;
+      const { error } = await supabase.auth.signUp({
+        email: identifier,
+        password,
+        options: { emailRedirectTo: redirectUrl },
+      });
+      setBusy(false);
+      if (error) return setErr(error.message);
+      setMsg("Account created. Check your email to confirm, then sign in.");
+      setAuthMode("signin");
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: identifier,
+        password,
+      });
+      setBusy(false);
+      if (error) return setErr(error.message);
+      navigate({ to: "/passenger" });
+    }
+  };
+
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
