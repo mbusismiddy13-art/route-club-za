@@ -44,9 +44,11 @@ function Landing() {
               <Sparkles className="h-3 w-3 text-primary-glow" />
               Built for the South African commuter
             </span>
-            <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
-              The Transport <span className="text-gradient">Club</span>
-            </h1>
+            <img
+              src={logoMark}
+              alt="The Transport Club — Connect. Commute. Community."
+              className="mt-5 w-full max-w-md drop-shadow-[0_10px_40px_oklch(0.62_0.21_275/0.35)]"
+            />
             <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
               Subscribe to your commute. Skip the ride‑hailing tax. Monthly plans, shared‑route matching and verified drivers — for workers, students, schools and businesses.
             </p>
