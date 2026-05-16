@@ -14,6 +14,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { SiteNav } from "@/components/SiteNav";
+import logoMark from "@/assets/logo.png";
 
 export const Route = createFileRoute("/")({
   component: Landing,
