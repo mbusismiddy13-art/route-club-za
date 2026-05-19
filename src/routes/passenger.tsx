@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { AppShell, Section, StatCard } from "@/components/AppShell";
 import { RequestRideCard } from "@/components/RequestRideCard";
+import { ActiveRideChat } from "@/components/ActiveRideChat";
 
 export const Route = createFileRoute("/passenger")({
   component: PassengerDashboard,
