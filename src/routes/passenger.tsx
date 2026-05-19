@@ -220,6 +220,10 @@ function PassengerDashboard() {
           </table>
         </div>
       </Section>
+
+      <Section title="Message your driver" className="mt-5">
+        <ActiveRideChat role="passenger" />
+      </Section>
     </AppShell>
   );
 }
