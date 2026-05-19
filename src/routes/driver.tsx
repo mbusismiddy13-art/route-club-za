@@ -173,6 +173,10 @@ function DriverDashboard() {
           })}
         </div>
       </Section>
+
+      <Section title="Message your passenger" className="mt-5">
+        <ActiveRideChat role="driver" />
+      </Section>
     </AppShell>
   );
 }
