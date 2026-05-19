@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { AppShell, Section, StatCard } from "@/components/AppShell";
 import { DriverInbox } from "@/components/DriverInbox";
+import { ActiveRideChat } from "@/components/ActiveRideChat";
 
 export const Route = createFileRoute("/driver")({
   component: DriverDashboard,
@@ -171,6 +172,10 @@ function DriverDashboard() {
             );
           })}
         </div>
+      </Section>
+
+      <Section title="Message your passenger" className="mt-5">
+        <ActiveRideChat role="driver" />
       </Section>
     </AppShell>
   );
