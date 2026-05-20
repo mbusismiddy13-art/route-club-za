@@ -120,6 +120,17 @@ function LoginPage() {
             </svg>
             Continue with Google
           </button>
+          <button
+            type="button"
+            onClick={signInWithApple}
+            disabled={busy}
+            className="mt-2 inline-flex w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-foreground px-4 py-3 text-sm font-medium text-background transition hover:opacity-90 disabled:opacity-60"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.05 12.04c-.03-2.7 2.2-4 2.3-4.06-1.25-1.83-3.2-2.08-3.9-2.11-1.66-.17-3.24.98-4.08.98-.85 0-2.15-.96-3.54-.93-1.82.03-3.5 1.06-4.44 2.69-1.9 3.28-.48 8.13 1.36 10.8.9 1.3 1.97 2.77 3.36 2.72 1.35-.05 1.86-.87 3.5-.87s2.1.87 3.54.84c1.46-.02 2.39-1.33 3.28-2.64 1.04-1.52 1.46-2.99 1.48-3.07-.03-.01-2.84-1.09-2.87-4.32zM14.4 4.1c.74-.9 1.24-2.15 1.1-3.4-1.07.04-2.36.71-3.13 1.61-.69.79-1.29 2.07-1.13 3.29 1.19.09 2.41-.61 3.16-1.5z"/>
+            </svg>
+            Continue with Apple
+          </button>
           <div className="mt-4 flex items-center gap-3 text-[10px] uppercase tracking-wider text-muted-foreground">
             <span className="h-px flex-1 bg-border" /> or <span className="h-px flex-1 bg-border" />
           </div>
