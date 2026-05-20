@@ -3,6 +3,7 @@ import { ArrowLeft, Mail, Phone, ShieldCheck, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
