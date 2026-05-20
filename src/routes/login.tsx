@@ -3,6 +3,7 @@ import { ArrowLeft, Mail, Phone, ShieldCheck, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -50,6 +51,22 @@ function LoginPage() {
     }
   };
 
+  const signInWithGoogle = async () => {
+    setErr(null);
+    setMsg(null);
+    setBusy(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin + "/passenger",
+    });
+    if (result.error) {
+      setBusy(false);
+      return setErr(result.error.message ?? "Google sign-in failed");
+    }
+    if (result.redirected) return;
+    setBusy(false);
+    navigate({ to: "/passenger" });
+  };
+
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -76,7 +93,22 @@ function LoginPage() {
             Sign in to manage your commute, subscription and trips.
           </p>
 
-          <div className="mt-8 inline-flex rounded-full border border-border bg-surface p-1 text-xs">
+          <button
+            type="button"
+            onClick={signInWithGoogle}
+            disabled={busy}
+            className="mt-8 inline-flex w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium text-foreground transition hover:bg-surface-elevated disabled:opacity-60"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5 6.8 2.5 2.5 6.8 2.5 12S6.8 21.5 12 21.5c6.9 0 9.5-4.8 9.5-7.3 0-.5 0-.9-.1-1.3H12z"/>
+            </svg>
+            Continue with Google
+          </button>
+          <div className="mt-4 flex items-center gap-3 text-[10px] uppercase tracking-wider text-muted-foreground">
+            <span className="h-px flex-1 bg-border" /> or <span className="h-px flex-1 bg-border" />
+          </div>
+
+          <div className="mt-4 inline-flex rounded-full border border-border bg-surface p-1 text-xs">
             {(["phone", "email"] as const).map((m) => (
               <button
                 key={m}
