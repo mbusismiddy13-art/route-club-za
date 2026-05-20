@@ -51,6 +51,22 @@ function LoginPage() {
     }
   };
 
+  const signInWithGoogle = async () => {
+    setErr(null);
+    setMsg(null);
+    setBusy(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin + "/passenger",
+    });
+    if (result.error) {
+      setBusy(false);
+      return setErr(result.error.message ?? "Google sign-in failed");
+    }
+    if (result.redirected) return;
+    setBusy(false);
+    navigate({ to: "/passenger" });
+  };
+
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
