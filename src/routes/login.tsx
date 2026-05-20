@@ -108,7 +108,7 @@ function LoginPage() {
             <span className="h-px flex-1 bg-border" /> or <span className="h-px flex-1 bg-border" />
           </div>
 
-          <div className="mt-8 inline-flex rounded-full border border-border bg-surface p-1 text-xs">
+          <div className="mt-4 inline-flex rounded-full border border-border bg-surface p-1 text-xs">
             {(["phone", "email"] as const).map((m) => (
               <button
                 key={m}
