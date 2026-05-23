@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 export function Logo({ className = "" }: { className?: string }) {
   return (
     <Link to="/" className={`group inline-flex items-center gap-2.5 ${className}`}>
-      <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-primary shadow-glow">
+      <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-primary shadow-glow animate-[float_4s_ease-in-out_infinite]">
         <svg
           viewBox="0 0 24 24"
           fill="none"
