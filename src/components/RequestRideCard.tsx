@@ -14,7 +14,17 @@ type Driver = {
   rating: number;
   current_location: string | null;
   seats: number;
+  is_online: boolean;
+  is_in_house?: boolean;
+  bio?: string | null;
+  service_areas?: string | null;
+  price_per_trip?: number | null;
+  retainer_weekly?: number | null;
+  retainer_monthly?: number | null;
 };
+
+const rand = (v?: number | null) => (v == null ? "—" : `R${Number(v).toLocaleString("en-ZA")}`);
+type Filter = "all" | "inhouse" | "independent";
 
 type RideRequest = {
   id: string;
@@ -35,6 +45,10 @@ export function RequestRideCard() {
   const [submitting, setSubmitting] = useState(false);
   const [activeRequests, setActiveRequests] = useState<RideRequest[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Filter>("all");
+  const shown = drivers.filter((d) =>
+    filter === "all" ? true : filter === "inhouse" ? d.is_in_house : !d.is_in_house,
+  );
 
   // Load online drivers + subscribe to changes
   useEffect(() => {
@@ -43,9 +57,9 @@ export function RequestRideCard() {
       const { data } = await supabase
         .from("drivers")
         .select("*")
-        .eq("is_online", true)
+        .order("is_online", { ascending: false })
         .order("rating", { ascending: false });
-      setDrivers((data ?? []) as Driver[]);
+      setDrivers((data ?? []) as unknown as Driver[]);
     };
     load();
     const ch = supabase
@@ -169,10 +183,26 @@ export function RequestRideCard() {
 
       {error && <p className="mt-3 text-xs text-destructive">{error}</p>}
 
-      <div className="mt-5 flex items-center justify-between">
-        <p className="text-xs uppercase tracking-wider text-muted-foreground">
-          Available drivers ({drivers.length})
-        </p>
+      <div className="mt-5 rounded-xl border border-border bg-surface px-3 py-2.5 text-[11px] text-muted-foreground">
+        <span className="text-foreground">NalaFlow in‑house</span> drivers are covered by your subscription.{" "}
+        <span className="text-foreground">Independent providers</span> set their own prices — you pay them via a
+        direct client‑to‑provider retainer.
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex gap-1.5">
+          {(["all", "inhouse", "independent"] as Filter[]).map((k) => (
+            <button
+              key={k}
+              onClick={() => setFilter(k)}
+              className={`rounded-full px-3 py-1 text-xs ${
+                filter === k ? "bg-primary text-primary-foreground" : "border border-border bg-surface-elevated"
+              }`}
+            >
+              {k === "all" ? `All (${drivers.length})` : k === "inhouse" ? "In‑house" : "Independent"}
+            </button>
+          ))}
+        </div>
         <button
           onClick={() => submit(null)}
           disabled={submitting}
@@ -184,23 +214,26 @@ export function RequestRideCard() {
       </div>
 
       <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {drivers.length === 0 && (
+        {shown.length === 0 && (
           <div className="col-span-full rounded-xl border border-dashed border-border bg-surface px-4 py-8 text-center text-sm text-muted-foreground">
-            No drivers online right now. Try broadcasting — drivers will be notified when they come online.
+            No drivers in this group yet.
           </div>
         )}
-        {drivers.map((d) => {
+        {shown.map((d) => {
           const selected = selectedDriver === d.id;
           return (
             <div
               key={d.id}
-              className={`rounded-2xl border p-4 transition ${
+              className={`flex flex-col rounded-2xl border p-4 transition ${
                 selected ? "border-primary bg-surface-elevated shadow-glow" : "border-border bg-surface"
               }`}
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between gap-2">
                 <div>
-                  <p className="font-medium">{d.full_name}</p>
+                  <p className="flex items-center gap-1.5 font-medium">
+                    <span className={`h-2 w-2 rounded-full ${d.is_online ? "bg-success" : "bg-muted-foreground/40"}`} />
+                    {d.full_name}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {[d.vehicle_make, d.vehicle_model].filter(Boolean).join(" ") || "Vehicle"}
                     {d.vehicle_plate ? ` · ${d.vehicle_plate}` : ""}
@@ -210,14 +243,34 @@ export function RequestRideCard() {
                   <Star className="h-3 w-3" /> {Number(d.rating).toFixed(1)}
                 </span>
               </div>
-              <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
+              <span
+                className={`mt-2 w-fit rounded-full px-2 py-0.5 text-[10px] ${
+                  d.is_in_house ? "bg-primary/15 text-primary-glow" : "bg-surface-elevated text-muted-foreground"
+                }`}
+              >
+                {d.is_in_house ? "NalaFlow in‑house · subscription" : "Independent · direct retainer"}
+              </span>
+              {d.bio && <p className="mt-2 text-xs text-muted-foreground">{d.bio}</p>}
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
                 <Car className="h-3.5 w-3.5" /> {d.seats} seats
-                {d.current_location && (
+                {(d.service_areas || d.current_location) && (
                   <>
                     <span>·</span>
-                    <MapPin className="h-3.5 w-3.5" /> {d.current_location}
+                    <MapPin className="h-3.5 w-3.5" /> {d.service_areas || d.current_location}
                   </>
                 )}
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-1.5 text-center">
+                {[
+                  ["Trip", d.price_per_trip],
+                  ["Week", d.retainer_weekly],
+                  ["Month", d.retainer_monthly],
+                ].map(([l, v]) => (
+                  <div key={l as string} className="rounded-lg border border-border bg-surface-elevated px-1 py-1.5">
+                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{l as string}</p>
+                    <p className="text-xs font-medium">{rand(v as number | null)}</p>
+                  </div>
+                ))}
               </div>
               <button
                 onClick={() => {
@@ -227,7 +280,7 @@ export function RequestRideCard() {
                 disabled={submitting}
                 className="mt-4 w-full rounded-xl bg-gradient-primary px-3 py-2 text-xs font-medium text-primary-foreground shadow-glow disabled:opacity-50"
               >
-                Request this driver
+                {d.is_online ? "Request this driver" : "Request (offline — will be notified)"}
               </button>
             </div>
           );
