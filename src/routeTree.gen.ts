@@ -9,31 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as CorporateRouteImport } from './routes/corporate'
-import { Route as DriverRouteImport } from './routes/driver'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as PassengerRouteImport } from './routes/passenger'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as DriverRouteImport } from './routes/driver'
+import { Route as CorporateRouteImport } from './routes/corporate'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as IndexRouteImport } from './routes/index'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CorporateRoute = CorporateRouteImport.update({
-  id: '/corporate',
-  path: '/corporate',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DriverRoute = DriverRouteImport.update({
-  id: '/driver',
-  path: '/driver',
+const PassengerRoute = PassengerRouteImport.update({
+  id: '/passenger',
+  path: '/passenger',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -41,9 +26,24 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PassengerRoute = PassengerRouteImport.update({
-  id: '/passenger',
-  path: '/passenger',
+const DriverRoute = DriverRouteImport.update({
+  id: '/driver',
+  path: '/driver',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CorporateRoute = CorporateRouteImport.update({
+  id: '/corporate',
+  path: '/corporate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -98,32 +98,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/corporate': {
-      id: '/corporate'
-      path: '/corporate'
-      fullPath: '/corporate'
-      preLoaderRoute: typeof CorporateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/driver': {
-      id: '/driver'
-      path: '/driver'
-      fullPath: '/driver'
-      preLoaderRoute: typeof DriverRouteImport
+    '/passenger': {
+      id: '/passenger'
+      path: '/passenger'
+      fullPath: '/passenger'
+      preLoaderRoute: typeof PassengerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -133,11 +112,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/passenger': {
-      id: '/passenger'
-      path: '/passenger'
-      fullPath: '/passenger'
-      preLoaderRoute: typeof PassengerRouteImport
+    '/driver': {
+      id: '/driver'
+      path: '/driver'
+      fullPath: '/driver'
+      preLoaderRoute: typeof DriverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/corporate': {
+      id: '/corporate'
+      path: '/corporate'
+      fullPath: '/corporate'
+      preLoaderRoute: typeof CorporateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }

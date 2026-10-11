@@ -189,10 +189,12 @@ function Landing() {
             Plans
           </p>
           <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight md:text-4xl">
-            Predictable monthly pricing
+            Two ways to ride
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
-            Cancel any month. Roll over unused trips for up to 30 days.
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
+            <strong className="text-foreground">Subscriptions</strong> below are only for rides with
+            NalaFlow in‑house drivers. Every other driver is an independent provider: you browse their
+            profile and prices, then agree a <strong className="text-foreground">retainer directly with them</strong>.
           </p>
         </div>
 

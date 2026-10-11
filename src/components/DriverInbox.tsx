@@ -4,6 +4,7 @@ import { Loader2, MapPin, CheckCircle2, XCircle, Power } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
 import { Section } from "@/components/AppShell";
+import { DriverPricingEditor, type DriverPricing } from "@/components/DriverPricingEditor";
 
 type Driver = {
   id: string;
@@ -193,6 +194,7 @@ export function DriverInbox() {
         </button>
       }
     >
+      <DriverPricingEditor driver={driver as unknown as DriverPricing} />
       {!driver.is_online && (
         <p className="mb-3 rounded-xl border border-border bg-surface px-3 py-2 text-xs text-muted-foreground">
           You're offline — passengers can't see you. Toggle online to receive requests.
