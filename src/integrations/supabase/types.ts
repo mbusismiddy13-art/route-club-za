@@ -131,6 +131,8 @@ export type Database = {
       }
       drivers: {
         Row: {
+          approval_note: string | null
+          approval_status: string
           bio: string | null
           created_at: string
           current_location: string | null
@@ -142,6 +144,7 @@ export type Database = {
           rating: number
           retainer_monthly: number | null
           retainer_weekly: number | null
+          reviewed_at: string | null
           seats: number
           service_areas: string | null
           updated_at: string
@@ -151,6 +154,8 @@ export type Database = {
           vehicle_plate: string | null
         }
         Insert: {
+          approval_note?: string | null
+          approval_status?: string
           bio?: string | null
           created_at?: string
           current_location?: string | null
@@ -162,6 +167,7 @@ export type Database = {
           rating?: number
           retainer_monthly?: number | null
           retainer_weekly?: number | null
+          reviewed_at?: string | null
           seats?: number
           service_areas?: string | null
           updated_at?: string
@@ -171,6 +177,8 @@ export type Database = {
           vehicle_plate?: string | null
         }
         Update: {
+          approval_note?: string | null
+          approval_status?: string
           bio?: string | null
           created_at?: string
           current_location?: string | null
@@ -182,6 +190,7 @@ export type Database = {
           rating?: number
           retainer_monthly?: number | null
           retainer_weekly?: number | null
+          reviewed_at?: string | null
           seats?: number
           service_areas?: string | null
           updated_at?: string
@@ -875,6 +884,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_company_member_by_email: {
+        Args: { _company: string; _email: string; _is_admin?: boolean }
+        Returns: string
+      }
+      company_member_emails: {
+        Args: { _company: string }
+        Returns: {
+          email: string
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
