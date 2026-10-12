@@ -10,7 +10,7 @@ export function AiDriverMatch({
   onRequest,
 }: {
   drivers: D[];
-  onRequest: (driverId: string) => void;
+  onRequest: (driverId: string, pickup: string, dropoff: string) => void;
 }) {
   const run = useServerFn(recommendDrivers);
   const [f, setF] = useState({ schedule: "", pickup: "", dropoff: "", budget: "" });
@@ -85,7 +85,7 @@ export function AiDriverMatch({
               <div className="mt-2 flex items-center justify-between">
                 <p className="text-[11px]">{r.suggested_plan}</p>
                 <button
-                  onClick={() => onRequest(r.driver_id)}
+                  onClick={() => onRequest(r.driver_id, f.pickup, f.dropoff)}
                   className="rounded-full bg-gradient-primary px-3 py-1 text-[11px] font-medium text-primary-foreground"
                 >
                   Request
