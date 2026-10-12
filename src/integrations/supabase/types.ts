@@ -131,13 +131,19 @@ export type Database = {
       }
       drivers: {
         Row: {
+          bio: string | null
           created_at: string
           current_location: string | null
           full_name: string
           id: string
+          is_in_house: boolean
           is_online: boolean
+          price_per_trip: number | null
           rating: number
+          retainer_monthly: number | null
+          retainer_weekly: number | null
           seats: number
+          service_areas: string | null
           updated_at: string
           user_id: string
           vehicle_make: string | null
@@ -145,13 +151,19 @@ export type Database = {
           vehicle_plate: string | null
         }
         Insert: {
+          bio?: string | null
           created_at?: string
           current_location?: string | null
           full_name: string
           id?: string
+          is_in_house?: boolean
           is_online?: boolean
+          price_per_trip?: number | null
           rating?: number
+          retainer_monthly?: number | null
+          retainer_weekly?: number | null
           seats?: number
+          service_areas?: string | null
           updated_at?: string
           user_id: string
           vehicle_make?: string | null
@@ -159,13 +171,19 @@ export type Database = {
           vehicle_plate?: string | null
         }
         Update: {
+          bio?: string | null
           created_at?: string
           current_location?: string | null
           full_name?: string
           id?: string
+          is_in_house?: boolean
           is_online?: boolean
+          price_per_trip?: number | null
           rating?: number
+          retainer_monthly?: number | null
+          retainer_weekly?: number | null
           seats?: number
+          service_areas?: string | null
           updated_at?: string
           user_id?: string
           vehicle_make?: string | null
