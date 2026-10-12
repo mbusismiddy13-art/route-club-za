@@ -4,6 +4,7 @@ import { Car, MapPin, Star, Loader2, X, CheckCircle2, Clock } from "lucide-react
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
 import { Section } from "@/components/AppShell";
+import { AiDriverMatch } from "@/components/AiDriverMatch";
 
 type Driver = {
   id: string;
@@ -97,9 +98,9 @@ export function RequestRideCard() {
     };
   }, [user]);
 
-  const submit = async (driverId: string | null) => {
+  const submit = async (driverId: string | null, pu = pickup, dr = dropoff) => {
     if (!user) return;
-    if (!pickup.trim() || !dropoff.trim()) {
+    if (!pu.trim() || !dr.trim()) {
       setError("Please enter pickup and drop-off locations.");
       return;
     }
@@ -108,8 +109,8 @@ export function RequestRideCard() {
     const { error: insErr } = await supabase.from("ride_requests").insert({
       passenger_id: user.id,
       driver_id: driverId,
-      pickup: pickup.trim(),
-      dropoff: dropoff.trim(),
+      pickup: pu.trim(),
+      dropoff: dr.trim(),
       notes: notes.trim() || null,
     });
     setSubmitting(false);
@@ -182,6 +183,16 @@ export function RequestRideCard() {
       </label>
 
       {error && <p className="mt-3 text-xs text-destructive">{error}</p>}
+
+      <AiDriverMatch
+        drivers={drivers}
+        onRequest={(id, pu, dr) => {
+          setPickup(pu);
+          setDropoff(dr);
+          setSelectedDriver(id);
+          submit(id, pu, dr);
+        }}
+      />
 
       <div className="mt-5 rounded-xl border border-border bg-surface px-3 py-2.5 text-[11px] text-muted-foreground">
         <span className="text-foreground">NalaFlow in‑house</span> drivers are covered by your subscription.{" "}
