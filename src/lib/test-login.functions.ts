@@ -22,7 +22,7 @@ export const testLogin = createServerFn({ method: "POST" })
       corporate_admin: "Test Company Admin",
     };
 
-    let { data: list } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
+    const { data: list } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
     let user = list?.users.find((u) => u.email === email);
     if (!user) {
       const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
@@ -51,6 +51,5 @@ export const testLogin = createServerFn({ method: "POST" })
     });
     const { data: s, error } = await anon.auth.signInWithPassword({ email, password });
     if (error || !s.session) throw new Error(error?.message ?? "Sign-in failed");
-    list = null;
     return { access_token: s.session.access_token, refresh_token: s.session.refresh_token };
   });
