@@ -16,6 +16,7 @@ import {
 import { AppShell, Section, StatCard } from "@/components/AppShell";
 import { RequestRideCard } from "@/components/RequestRideCard";
 import { ActiveRideChat } from "@/components/ActiveRideChat";
+import { WalletCard } from "@/components/WalletCard";
 
 export const Route = createFileRoute("/passenger")({
   component: PassengerDashboard,
@@ -134,6 +135,8 @@ function PassengerDashboard() {
         </Section>
 
         {/* Subscription */}
+        <div className="space-y-5">
+        <WalletCard />
         <Section title="Subscription">
           <div className="rounded-2xl bg-gradient-primary p-5 text-primary-foreground shadow-glow">
             <p className="text-[10px] uppercase tracking-wider opacity-80">Current plan</p>
@@ -168,6 +171,7 @@ function PassengerDashboard() {
             ))}
           </div>
         </Section>
+        </div>
       </div>
 
       {/* Stats row */}
