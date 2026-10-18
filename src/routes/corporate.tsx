@@ -11,6 +11,7 @@ import {
   CalendarCheck,
 } from "lucide-react";
 import { AppShell, Section, StatCard } from "@/components/AppShell";
+import { CompanyMembers } from "@/components/CompanyMembers";
 
 export const Route = createFileRoute("/corporate")({
   component: CorporateDashboard,
@@ -39,6 +40,10 @@ function CorporateDashboard() {
         <StatCard label="Active routes" value="6" delta="JHB metro" icon={Building2} />
         <StatCard label="Attendance lift" value="+9.2%" delta="vs last quarter" icon={TrendingUp} tone="success" />
         <StatCard label="Monthly invoice" value="R127 580" delta="due 25 May" icon={Wallet} />
+      </div>
+
+      <div className="mt-5">
+        <CompanyMembers />
       </div>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-3">

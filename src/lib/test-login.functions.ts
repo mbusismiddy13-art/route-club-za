@@ -22,7 +22,7 @@ export const testLogin = createServerFn({ method: "POST" })
       corporate_admin: "Test Company Admin",
     };
 
-    let { data: list } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
+    const { data: list } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
     let user = list?.users.find((u) => u.email === email);
     if (!user) {
       const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
@@ -37,11 +37,19 @@ export const testLogin = createServerFn({ method: "POST" })
     await supabaseAdmin.from("user_roles").upsert({ user_id: user.id, role: data.role }, { onConflict: "user_id,role" });
 
     const { createClient } = await import("@supabase/supabase-js");
-    const anon = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
+    const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+    const anon = createClient(process.env.SUPABASE_URL!, key, {
       auth: { persistSession: false, autoRefreshToken: false, storage: undefined },
+      global: {
+        fetch: (input, init) => {
+          const h = new Headers(init?.headers);
+          if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
+          h.set("apikey", key);
+          return fetch(input, { ...init, headers: h });
+        },
+      },
     });
     const { data: s, error } = await anon.auth.signInWithPassword({ email, password });
     if (error || !s.session) throw new Error(error?.message ?? "Sign-in failed");
-    list = null;
     return { access_token: s.session.access_token, refresh_token: s.session.refresh_token };
   });

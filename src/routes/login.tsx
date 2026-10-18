@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Mail, Phone, ShieldCheck, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
+import { TestLoginButtons } from "@/components/TestLoginButtons";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
@@ -212,6 +213,7 @@ function LoginPage() {
               </button>
             )}
           </form>
+          <TestLoginButtons />
 
           <p className="mt-6 text-xs text-muted-foreground">
             By continuing you agree to our POPIA‑aligned terms.

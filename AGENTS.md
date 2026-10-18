@@ -1,0 +1,1 @@
+- Test sign-in (src/lib/test-login.functions.ts) only runs on preview/localhost hosts; why: it mints sessions for demo accounts including admin.

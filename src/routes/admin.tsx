@@ -8,10 +8,9 @@ import {
   FileText,
   Settings,
   Map,
-  CheckCircle2,
-  XCircle,
 } from "lucide-react";
 import { AppShell, Section, StatCard } from "@/components/AppShell";
+import { DriverApprovals } from "@/components/DriverApprovals";
 
 export const Route = createFileRoute("/admin")({
   component: AdminDashboard,
@@ -44,71 +43,7 @@ function AdminDashboard() {
       </div>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-3">
-        {/* Driver approvals */}
-        <Section
-          title="Driver applications"
-          className="xl:col-span-2"
-          action={
-            <span className="text-xs text-muted-foreground">7 pending review</span>
-          }
-        >
-          <div className="space-y-2.5">
-            {[
-              {
-                n: "Thabo M.",
-                v: "Toyota Quantum · 2021",
-                r: "Soweto → Sandton",
-                docs: "All 6 uploaded",
-                status: "Background check passed",
-              },
-              {
-                n: "Refilwe S.",
-                v: "Nissan NV350 · 2019",
-                r: "Mamelodi → Pretoria CBD",
-                docs: "5 of 6 · missing roadworthy",
-                status: "Awaiting docs",
-              },
-              {
-                n: "Mandla K.",
-                v: "Toyota Hiace · 2022",
-                r: "Khayelitsha → Cape Town CBD",
-                docs: "All 6 uploaded",
-                status: "Facial verification done",
-              },
-            ].map((d) => (
-              <div
-                key={d.n}
-                className="grid items-center gap-3 rounded-2xl border border-border bg-surface-elevated p-4 sm:grid-cols-[1fr_auto]"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="grid h-11 w-11 place-items-center rounded-full bg-gradient-primary text-sm font-semibold text-primary-foreground">
-                    {d.n
-                      .split(" ")
-                      .map((p) => p[0])
-                      .join("")}
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium">{d.n}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {d.v} · {d.r}
-                    </p>
-                    <p className="mt-1 text-[11px] text-muted-foreground">
-                      {d.docs} · <span className="text-foreground">{d.status}</span>
-                    </p>
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2">
-                  <button className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs hover:bg-surface">
-                    <XCircle className="h-3.5 w-3.5 text-destructive" /> Reject
-                  </button>
-                  <button className="inline-flex items-center gap-1 rounded-lg bg-gradient-primary px-3 py-1.5 text-xs font-medium text-primary-foreground shadow-glow">
-                    <CheckCircle2 className="h-3.5 w-3.5" /> Approve
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Section>
+        <DriverApprovals />
 
         {/* Incidents */}
         <Section title="Incident feed">
