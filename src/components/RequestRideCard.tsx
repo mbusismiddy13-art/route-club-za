@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Car, MapPin, Star, Loader2, X, CheckCircle2, Clock } from "lucide-react";
+import { Car, MapPin, Star, Loader2, X, CheckCircle2, Clock, Search, Users, ArrowRight, BadgeCheck, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
-import { Section } from "@/components/AppShell";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AiDriverMatch } from "@/components/AiDriverMatch";
 
 type Driver = {
@@ -16,6 +17,7 @@ type Driver = {
   current_location: string | null;
   seats: number;
   is_online: boolean;
+  verified?: boolean;
   is_in_house?: boolean;
   bio?: string | null;
   service_areas?: string | null;
@@ -46,21 +48,27 @@ export function RequestRideCard() {
   const [submitting, setSubmitting] = useState(false);
   const [activeRequests, setActiveRequests] = useState<RideRequest[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [previewDriver, setPreviewDriver] = useState<Driver | null>(null);
+  const [showAi, setShowAi] = useState(false);
+  const [driversLoading, setDriversLoading] = useState(true);
+  const [driversError, setDriversError] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
   const shown = drivers.filter((d) =>
     filter === "all" ? true : filter === "inhouse" ? d.is_in_house : !d.is_in_house,
   );
 
-  // Load online drivers + subscribe to changes
+  // Preserve visibility of all providers, ordered online first and then by rating.
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      const { data } = await supabase
+      const { data, error: loadError } = await supabase
         .from("drivers")
         .select("*")
         .order("is_online", { ascending: false })
         .order("rating", { ascending: false });
       setDrivers((data ?? []) as unknown as Driver[]);
+      setDriversError(loadError ? "Drivers could not be loaded. Please try again shortly." : null);
+      setDriversLoading(false);
     };
     load();
     const ch = supabase
@@ -119,6 +127,7 @@ export function RequestRideCard() {
       return;
     }
     setSelectedDriver(null);
+    return true;
   };
 
   const cancelRequest = async (id: string) => {
@@ -127,213 +136,90 @@ export function RequestRideCard() {
 
   if (authLoading) return null;
 
-  if (!user) {
-    return (
-      <Section title="Request a ride">
-        <p className="text-sm text-muted-foreground">
-          Sign in to request a verified driver from The Transport Club network.
-        </p>
-        <Link
-          to="/login"
-          className="mt-4 inline-flex rounded-xl bg-gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-glow"
-        >
-          Sign in to continue
-        </Link>
-      </Section>
-    );
-  }
-
   return (
-    <Section title="Request a ride">
-      <div className="grid gap-3 sm:grid-cols-2">
-        <label className="block">
-          <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Pickup</span>
-          <div className="mt-1 flex items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2.5 focus-within:border-primary">
-            <MapPin className="h-4 w-4 text-primary-glow" />
-            <input
-              value={pickup}
-              onChange={(e) => setPickup(e.target.value)}
-              placeholder="e.g. 12 Vilakazi St, Soweto"
-              className="w-full bg-transparent text-sm outline-none"
-            />
+    <section aria-label="Find a driver">
+      <div className="-mx-4 bg-primary px-4 pb-7 pt-2 lg:mx-0 lg:rounded-b-3xl lg:px-6">
+        <form onSubmit={(event) => {
+          event.preventDefault();
+          if (!pickup.trim() || !dropoff.trim()) {
+            setError("Please enter pickup and drop-off locations.");
+            return;
+          }
+          setError(null);
+          document.getElementById("available-providers")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
+        }}>
+          <div className="divide-y divide-border rounded-2xl border border-border bg-surface px-5 shadow-soft">
+            <label className="flex min-w-0 items-center gap-4 py-5">
+              <span className="h-3 w-3 shrink-0 rounded-full bg-success" />
+              <input aria-label="Pickup location" value={pickup} onChange={(e) => setPickup(e.target.value)} placeholder="Pickup location" className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground" />
+              <MapPin className="h-5 w-5 shrink-0 text-primary-glow" />
+            </label>
+            <label className="flex min-w-0 items-center gap-4 py-5">
+              <span className="h-3 w-3 shrink-0 rounded-sm bg-destructive" />
+              <input aria-label="Drop-off location" value={dropoff} onChange={(e) => setDropoff(e.target.value)} placeholder="Drop-off / Work location" className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground" />
+            </label>
           </div>
-        </label>
-        <label className="block">
-          <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Drop‑off</span>
-          <div className="mt-1 flex items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2.5 focus-within:border-primary">
-            <MapPin className="h-4 w-4 text-primary-glow" />
-            <input
-              value={dropoff}
-              onChange={(e) => setDropoff(e.target.value)}
-              placeholder="e.g. Alice Lane, Sandton"
-              className="w-full bg-transparent text-sm outline-none"
-            />
-          </div>
-        </label>
+          <Button type="submit" className="mt-4 h-14 w-full rounded-xl bg-surface-elevated text-base text-foreground shadow-soft hover:bg-surface"><Search />Find providers</Button>
+        </form>
       </div>
 
-      <label className="mt-3 block">
-        <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Notes (optional)</span>
-        <input
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Luggage, child seat, etc."
-          className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary"
-        />
-      </label>
-
-      {error && <p className="mt-3 text-xs text-destructive">{error}</p>}
-
-      <AiDriverMatch
-        drivers={drivers}
-        onRequest={(id, pu, dr) => {
-          setPickup(pu);
-          setDropoff(dr);
-          setSelectedDriver(id);
-          submit(id, pu, dr);
-        }}
-      />
-
-      <div className="mt-5 rounded-xl border border-border bg-surface px-3 py-2.5 text-[11px] text-muted-foreground">
-        <span className="text-foreground">NalaFlow in‑house</span> drivers are covered by your subscription.{" "}
-        <span className="text-foreground">Independent providers</span> set their own prices — you pay them via a
-        direct client‑to‑provider retainer.
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex gap-1.5">
-          {(["all", "inhouse", "independent"] as Filter[]).map((k) => (
-            <button
-              key={k}
-              onClick={() => setFilter(k)}
-              className={`rounded-full px-3 py-1 text-xs ${
-                filter === k ? "bg-primary text-primary-foreground" : "border border-border bg-surface-elevated"
-              }`}
-            >
-              {k === "all" ? `All (${drivers.length})` : k === "inhouse" ? "In‑house" : "Independent"}
-            </button>
+      <div id="available-providers" className="scroll-mt-4 py-6">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+          <div className="min-w-0"><h2 className="font-display text-xl font-semibold">Available providers</h2><p className="mt-1 text-xs text-muted-foreground">{drivers.length} providers · online first</p></div>
+          <Button variant="ghost" size="icon" aria-label="AI driver matching" title="AI driver matching" onClick={() => setShowAi(!showAi)}><Sparkles className="text-primary-glow" /></Button>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Provider type">
+          {(["all", "inhouse", "independent"] as Filter[]).map((k) => <Button key={k} size="sm" variant={filter === k ? "default" : "secondary"} aria-pressed={filter === k} onClick={() => setFilter(k)} className="rounded-full">{k === "all" ? "All providers" : k === "inhouse" ? "NalaFlow in-house" : "Independent"}</Button>)}
+        </div>
+        {error && <p role="alert" className="mt-3 text-sm text-destructive">{error}</p>}
+        {!user && <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-y border-border py-5"><p className="text-sm text-muted-foreground">Sign in to view providers and request your commute.</p><Button asChild><Link to="/login">Sign in <ArrowRight /></Link></Button></div>}
+        {user && driversLoading && <div className="flex items-center justify-center gap-2 py-12 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Loading providers…</div>}
+        {driversError && <p role="alert" className="mt-5 text-sm text-destructive">{driversError}</p>}
+        {user && !driversLoading && !driversError && shown.length === 0 && <p className="py-12 text-center text-sm text-muted-foreground">No providers in this group yet.</p>}
+        <div className="mt-5 grid gap-4 xl:grid-cols-2">
+          {shown.map((d) => (
+            <article key={d.id} className="min-w-0 rounded-2xl border border-border bg-surface p-5 shadow-card">
+              <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
+                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-primary/15 sm:h-16 sm:w-16"><Car className="h-7 w-7 text-primary-glow" /></div>
+                <div className="min-w-0">
+                  <h3 className="break-words font-display text-lg font-semibold">{d.full_name}</h3>
+                  <p className="mt-1 break-words text-sm text-muted-foreground">{[d.vehicle_make, d.vehicle_model].filter(Boolean).join(" ") || "Vehicle details pending"}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-sm"><Star className="h-4 w-4 fill-warning text-warning" /><span>{Number(d.rating).toFixed(1)}</span><span className="text-muted-foreground">·</span><span className={`text-xs ${d.is_online ? "text-success" : "text-muted-foreground"}`}>{d.is_online ? "Online" : "Offline"}</span></div>
+                  <p className="mt-2 flex items-start gap-2 text-xs text-muted-foreground"><MapPin className="h-4 w-4 shrink-0 text-primary-glow" /><span className="break-words">{d.service_areas || d.current_location || "Service areas not listed"}</span></p>
+                </div>
+                {d.verified && <BadgeCheck aria-label="Verified driver" className="h-5 w-5 shrink-0 text-primary-glow" />}
+              </div>
+              <div className="mt-5 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-border pt-4">
+                <div className="min-w-0"><p className="flex items-center gap-2 text-sm text-muted-foreground"><Users className="h-4 w-4 shrink-0" />{d.seats} seats</p><span className={`mt-2 inline-block rounded-md px-2 py-1 text-[11px] ${d.is_in_house ? "bg-primary/15 text-primary-glow" : "bg-warning/10 text-warning"}`}>{d.is_in_house ? "In-house · subscription" : "Independent · retainer"}</span></div>
+                <div className="text-right"><p className="font-display text-xl font-semibold text-primary-glow">{d.retainer_monthly != null ? rand(d.retainer_monthly) : d.price_per_trip != null ? rand(d.price_per_trip) : "Not listed"}</p><p className="text-[11px] text-muted-foreground">{d.retainer_monthly != null ? "per month" : d.price_per_trip != null ? "per trip" : "Pricing"}</p></div>
+              </div>
+              <Button variant="outline" className="mt-4 h-10 w-full rounded-lg" onClick={() => { setPreviewDriver(d); setError(null); }}>View provider <ArrowRight /></Button>
+            </article>
           ))}
         </div>
-        <button
-          onClick={() => submit(null)}
-          disabled={submitting}
-          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-elevated px-3 py-1.5 text-xs hover:bg-background disabled:opacity-50"
-        >
-          {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-          Broadcast to all
-        </button>
+        {user && <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4"><p className="max-w-lg text-xs leading-relaxed text-muted-foreground">Subscriptions are for NalaFlow in-house drivers. Independent providers set their own direct retainer prices.</p><Button variant="secondary" size="sm" disabled={submitting} onClick={() => submit(null)}>Broadcast to all</Button></div>}
+        {showAi && user && <AiDriverMatch drivers={drivers} onRequest={(id, pu, dr) => { setPickup(pu); setDropoff(dr); setSelectedDriver(id); submit(id, pu, dr); }} />}
       </div>
 
-      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {shown.length === 0 && (
-          <div className="col-span-full rounded-xl border border-dashed border-border bg-surface px-4 py-8 text-center text-sm text-muted-foreground">
-            No drivers in this group yet.
-          </div>
-        )}
-        {shown.map((d) => {
-          const selected = selectedDriver === d.id;
-          return (
-            <div
-              key={d.id}
-              className={`flex flex-col rounded-2xl border p-4 transition ${
-                selected ? "border-primary bg-surface-elevated shadow-glow" : "border-border bg-surface"
-              }`}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="flex items-center gap-1.5 font-medium">
-                    <span className={`h-2 w-2 rounded-full ${d.is_online ? "bg-success" : "bg-muted-foreground/40"}`} />
-                    {d.full_name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {[d.vehicle_make, d.vehicle_model].filter(Boolean).join(" ") || "Vehicle"}
-                    {d.vehicle_plate ? ` · ${d.vehicle_plate}` : ""}
-                  </p>
-                </div>
-                <span className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 text-[11px] text-warning">
-                  <Star className="h-3 w-3" /> {Number(d.rating).toFixed(1)}
-                </span>
-              </div>
-              <span
-                className={`mt-2 w-fit rounded-full px-2 py-0.5 text-[10px] ${
-                  d.is_in_house ? "bg-primary/15 text-primary-glow" : "bg-surface-elevated text-muted-foreground"
-                }`}
-              >
-                {d.is_in_house ? "NalaFlow in‑house · subscription" : "Independent · direct retainer"}
-              </span>
-              {d.bio && <p className="mt-2 text-xs text-muted-foreground">{d.bio}</p>}
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-                <Car className="h-3.5 w-3.5" /> {d.seats} seats
-                {(d.service_areas || d.current_location) && (
-                  <>
-                    <span>·</span>
-                    <MapPin className="h-3.5 w-3.5" /> {d.service_areas || d.current_location}
-                  </>
-                )}
-              </div>
-              <div className="mt-3 grid grid-cols-3 gap-1.5 text-center">
-                {[
-                  ["Trip", d.price_per_trip],
-                  ["Week", d.retainer_weekly],
-                  ["Month", d.retainer_monthly],
-                ].map(([l, v]) => (
-                  <div key={l as string} className="rounded-lg border border-border bg-surface-elevated px-1 py-1.5">
-                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{l as string}</p>
-                    <p className="text-xs font-medium">{rand(v as number | null)}</p>
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={() => {
-                  setSelectedDriver(d.id);
-                  submit(d.id);
-                }}
-                disabled={submitting}
-                className="mt-4 w-full rounded-xl bg-gradient-primary px-3 py-2 text-xs font-medium text-primary-foreground shadow-glow disabled:opacity-50"
-              >
-                {d.is_online ? "Request this driver" : "Request (offline — will be notified)"}
-              </button>
-            </div>
-          );
-        })}
-      </div>
+      <Dialog open={previewDriver !== null} onOpenChange={(open) => { if (!open) setPreviewDriver(null); }}>
+        <DialogContent className="max-h-[90dvh] w-[calc(100%-2rem)] overflow-y-auto rounded-2xl bg-surface">
+          {previewDriver && <>
+            <DialogHeader><DialogTitle className="pr-6">{previewDriver.full_name}</DialogTitle><DialogDescription>{[previewDriver.vehicle_make, previewDriver.vehicle_model, previewDriver.vehicle_plate].filter(Boolean).join(" · ") || "Vehicle details pending"}</DialogDescription></DialogHeader>
+            <div className="flex flex-wrap gap-4 text-sm"><span className="inline-flex items-center gap-1"><Star className="h-4 w-4 text-warning" />{Number(previewDriver.rating).toFixed(1)}</span><span>{previewDriver.seats} seats</span><span className={previewDriver.is_online ? "text-success" : "text-muted-foreground"}>{previewDriver.is_online ? "Online" : "Offline"}</span></div>
+            {previewDriver.bio && <p className="break-words text-sm text-muted-foreground">{previewDriver.bio}</p>}
+            <p className="break-words text-sm"><MapPin className="mr-2 inline h-4 w-4 text-primary-glow" />{previewDriver.service_areas || previewDriver.current_location || "Service areas not listed"}</p>
+            <div className="grid grid-cols-3 divide-x divide-border border-y border-border py-4 text-center">{[["Per trip", previewDriver.price_per_trip], ["Per week", previewDriver.retainer_weekly], ["Per month", previewDriver.retainer_monthly]].map(([label, value]) => <div key={String(label)} className="min-w-0 px-1"><p className="text-[11px] text-muted-foreground">{label}</p><p className="mt-1 break-words text-sm font-semibold">{rand(value as number | null)}</p></div>)}</div>
+            <p className="text-xs text-muted-foreground">{previewDriver.is_in_house ? "NalaFlow in-house · subscription" : "Independent provider · direct retainer"}</p>
+            <label className="text-xs text-muted-foreground">Pickup<input aria-label="Request pickup" value={pickup} onChange={(e) => setPickup(e.target.value)} placeholder="Pickup location" className="mt-1 block w-full rounded-lg border border-border bg-background p-3 text-sm text-foreground outline-none focus:border-primary" /></label>
+            <label className="text-xs text-muted-foreground">Drop-off<input aria-label="Request drop-off" value={dropoff} onChange={(e) => setDropoff(e.target.value)} placeholder="Drop-off location" className="mt-1 block w-full rounded-lg border border-border bg-background p-3 text-sm text-foreground outline-none focus:border-primary" /></label>
+            <label className="text-xs text-muted-foreground">Notes (optional)<input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Luggage, child seat, etc." className="mt-1 block w-full rounded-lg border border-border bg-background p-3 text-sm text-foreground outline-none focus:border-primary" /></label>
+            {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+            <Button disabled={submitting} className="h-auto min-h-11 whitespace-normal rounded-lg" onClick={async () => { setSelectedDriver(previewDriver.id); const success = await submit(previewDriver.id); if (success) setPreviewDriver(null); }}>{submitting && selectedDriver === previewDriver.id ? <Loader2 className="animate-spin" /> : <ArrowRight />}{previewDriver.is_online ? "Request this driver" : "Request driver · currently offline"}</Button>
+          </>}
+        </DialogContent>
+      </Dialog>
 
-      {activeRequests.length > 0 && (
-        <div className="mt-6">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground">Your active requests</p>
-          <div className="mt-2 space-y-2">
-            {activeRequests.map((r) => (
-              <div
-                key={r.id}
-                className="flex items-center justify-between rounded-xl border border-border bg-surface-elevated px-3 py-2.5"
-              >
-                <div className="text-sm">
-                  <p className="font-medium">
-                    {r.pickup} → {r.dropoff}
-                  </p>
-                  <p className="mt-0.5 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-                    {r.status === "accepted" ? (
-                      <>
-                        <CheckCircle2 className="h-3 w-3 text-success" /> Driver accepted
-                      </>
-                    ) : (
-                      <>
-                        <Clock className="h-3 w-3 text-warning" /> Waiting for driver
-                      </>
-                    )}
-                  </p>
-                </div>
-                <button
-                  onClick={() => cancelRequest(r.id)}
-                  className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] hover:bg-background"
-                >
-                  <X className="h-3 w-3" /> Cancel
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </Section>
+      {activeRequests.length > 0 && <div id="active-requests" className="scroll-mt-4 border-t border-border py-5"><h2 className="font-display text-lg font-semibold">Your active requests</h2><div className="mt-3 space-y-2">{activeRequests.map((r) => <div key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-border bg-surface-elevated p-4"><div className="min-w-0"><p className="break-words text-sm font-medium">{r.pickup} → {r.dropoff}</p><p className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground">{r.status === "accepted" ? <><CheckCircle2 className="h-3 w-3 text-success" />Driver accepted</> : <><Clock className="h-3 w-3 text-warning" />Waiting for driver</>}</p></div><Button variant="outline" size="sm" onClick={() => cancelRequest(r.id)}><X />Cancel</Button></div>)}</div></div>}
+    </section>
   );
 }

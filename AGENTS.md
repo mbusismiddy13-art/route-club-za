@@ -1,1 +1,2 @@
 - Test sign-in (src/lib/test-login.functions.ts) only runs on preview/localhost hosts; why: it mints sessions for demo accounts including admin.
+- Passenger provider browsing and previews stay in RequestRideCard and reuse its existing request writes and realtime subscriptions; why: layout changes must preserve booking behaviour.
