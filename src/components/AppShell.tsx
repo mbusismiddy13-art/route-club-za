@@ -61,38 +61,49 @@ export function AppShell({
         </aside>
 
         {/* Main */}
-        <main className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border bg-surface px-5 py-4 shadow-card">
-            <div>
-              <h1 className="font-display text-2xl font-semibold tracking-tight">{title}</h1>
-              {subtitle && (
-                <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="hidden items-center gap-2 rounded-full border border-border bg-background px-3 py-2 text-sm text-muted-foreground sm:flex">
-                <Search className="h-3.5 w-3.5" />
-                <input
-                  placeholder="Search routes, drivers, riders…"
-                  className="w-56 bg-transparent outline-none placeholder:text-muted-foreground"
-                />
+        <main className="min-w-0 flex-1 pb-24 lg:pb-0">
+          <div className="-mx-4 -mt-5 bg-primary px-5 pb-10 pt-6 text-primary-foreground lg:mx-0 lg:mt-0 lg:rounded-3xl lg:px-6">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+              <div className="min-w-0">
+                <p className="text-sm opacity-90">Welcome back 👋</p>
+                <h1 className="truncate font-display text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
+                {subtitle && <p className="mt-1 text-sm opacity-85">{subtitle}</p>}
               </div>
-              <button className="relative rounded-full border border-border bg-background p-2.5 text-muted-foreground hover:text-foreground">
-                <Bell className="h-4 w-4" />
-                <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-              </button>
-              <div className="flex items-center gap-2.5 rounded-full border border-border bg-background py-1.5 pl-1.5 pr-3.5">
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-gradient-primary text-[11px] font-semibold text-primary-foreground">
-                  TC
-                </span>
-                <span className="text-sm font-medium">Thando C.</span>
+              <div className="flex shrink-0 items-center gap-2">
+                <div className="hidden items-center gap-2 rounded-full bg-primary-foreground/15 px-3 py-2 text-sm sm:flex">
+                  <Search className="h-3.5 w-3.5" />
+                  <input
+                    placeholder="Search routes, drivers…"
+                    className="w-48 bg-transparent outline-none placeholder:text-primary-foreground/70"
+                  />
+                </div>
+                <button className="relative grid h-11 w-11 place-items-center rounded-full bg-primary-foreground/20">
+                  <Bell className="h-5 w-5" />
+                  <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-accent" />
+                </button>
               </div>
             </div>
           </div>
 
-          <div className="mt-6">{children}</div>
+          <div className="relative -mt-6">{children}</div>
         </main>
       </div>
+
+      {/* Mobile bottom tabs */}
+      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden">
+        {items.slice(0, 4).map((item, i) => (
+          <Link
+            key={item.label + i}
+            to={item.to}
+            className="flex flex-col items-center gap-1 py-2.5 text-[11px] text-muted-foreground"
+            activeProps={{ className: i === 0 ? "text-primary" : "" }}
+            activeOptions={{ exact: true }}
+          >
+            <item.icon className="h-5 w-5" />
+            <span className="truncate">{item.label}</span>
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }
@@ -119,7 +130,7 @@ export function StatCard({
           ? "text-primary-glow"
           : "text-foreground";
   return (
-    <div className="rounded-2xl border border-border bg-surface p-5 shadow-card">
+    <div className="rounded-3xl border border-border bg-surface p-5 shadow-card">
       <div className="flex items-center justify-between">
         <span className="text-xs uppercase tracking-wider text-muted-foreground">
           {label}
