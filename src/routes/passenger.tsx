@@ -20,7 +20,14 @@ import { WalletCard } from "@/components/WalletCard";
 
 export const Route = createFileRoute("/passenger")({
   component: PassengerDashboard,
-  head: () => ({ meta: [{ title: "Passenger — The Transport Club" }] }),
+  head: () => ({ meta: [
+    { title: "Find providers — NalaFlow | The Transport Club" },
+    { name: "description", content: "Browse commuter providers, preview vehicles and pricing, and request your driver with NalaFlow." },
+    { property: "og:title", content: "Find providers — NalaFlow" },
+    { property: "og:description", content: "Compare commuter drivers and their rates before requesting your commute." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
 });
 
 const nav = [
@@ -35,9 +42,7 @@ function PassengerDashboard() {
   return (
     <AppShell
       items={nav}
-      title="Sawubona, Thando 👋"
-      subtitle="Your morning ride to Sandton CBD is confirmed for 06:45."
-      badge="Commuter+ active"
+      title="NalaFlow"
     >
       <div className="mb-5">
         <RequestRideCard />
